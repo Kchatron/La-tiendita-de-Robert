@@ -1,28 +1,18 @@
 import 'package:flutter/material.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:provider/provider.dart';
-import 'firebase_options.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'providers/bookshop_provider.dart';
 import 'data/repository/bookshop_repository.dart';
 import 'data/repository/firebase_auth_repository.dart';
-import 'providers/bookshop_provider.dart';
-import 'ui/main_app_scaffold.dart';
+import 'ui/screens/auth/login_screen.dart';
+import 'ui/screens/home/home_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp();
 
-  await Firebase.initializeApp(
-    options: DefaultFirebaseOptions.currentPlatform,
-  );
-
-  runApp(const MyApp());
-}
-
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return MultiProvider(
+  runApp(
+    MultiProvider(
       providers: [
         ChangeNotifierProvider(
           create: (_) => BookShopProvider(
@@ -31,18 +21,30 @@ class MyApp extends StatelessWidget {
           ),
         ),
       ],
-      child: MaterialApp(
-        title: 'BookShop',
-        debugShowCheckedModeBanner: false,
-        theme: ThemeData(
-          useMaterial3: true,
-          colorScheme: ColorScheme.fromSeed(
-            seedColor: Colors.indigo,
-            primary: Colors.indigo,
-            secondary: Colors.amber,
-          ),
-        ),
-        home: const MainAppScaffold(),
+      child: const MyApp(),
+    ),
+  );
+}
+
+class MyApp extends StatelessWidget {
+  const MyApp({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      title: 'BookShop',
+      debugShowCheckedModeBanner: false,
+      theme: ThemeData(
+        primarySwatch: Colors.indigo,
+        useMaterial3: true,
+      ),
+      home: Consumer<BookShopProvider>(
+        builder: (context, provider, _) {
+          if (provider.currentUser == null) {
+            return const LoginScreen();
+          }
+          return const HomeScreen();
+        },
       ),
     );
   }

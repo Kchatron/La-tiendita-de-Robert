@@ -125,34 +125,6 @@ class _LoginScreenState extends State<LoginScreen> {
                       ? const CircularProgressIndicator(color: Colors.white)
                       : const Text('Iniciar Sesión', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
                 ),
-                const SizedBox(height: 16),
-
-                // Quick Switch Demo buttons
-                Row(
-                  children: [
-                    Expanded(
-                      child: OutlinedButton(
-                        onPressed: provider.isLoading
-                            ? null
-                            : () async {
-                                await provider.switchToDemoUser();
-                              },
-                        child: const Text('Demo Lector'),
-                      ),
-                    ),
-                    const SizedBox(width: 12),
-                    Expanded(
-                      child: OutlinedButton(
-                        onPressed: provider.isLoading
-                            ? null
-                            : () async {
-                                await provider.switchToDemoAdmin();
-                              },
-                        child: const Text('Demo Admin'),
-                      ),
-                    ),
-                  ],
-                ),
                 const SizedBox(height: 24),
 
                 // Register Link

@@ -15,6 +15,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
   final _emailController = TextEditingController();
   final _passController = TextEditingController();
 
+  final String _selectedRole = 'user';
+
   final List<String> _availableGenres = [
     'Programación',
     'Inteligencia Artificial',
@@ -40,10 +42,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
     final provider = Provider.of<BookShopProvider>(context, listen: false);
     try {
       await provider.register(
-        _nameController.text,
-        _emailController.text,
-        _passController.text,
-        _selectedGenres,
+        email: _emailController.text,
+        password: _passController.text,
+        name: _nameController.text,
+        role: _selectedRole,
       );
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(

@@ -164,16 +164,9 @@ class _AdminScreensState extends State<AdminScreens> with SingleTickerProviderSt
       body: TabBarView(
         controller: _tabController,
         children: [
-          // TAB 1: STATS
           _buildStatsTab(provider.adminStats),
-
-          // TAB 2: MODERATION
           _buildModerationTab(provider.pendingBooks, provider),
-
-          // TAB 3: USERS
           _buildUsersTab(provider.allUsers, provider),
-
-          // TAB 4: CATEGORIES
           _buildCategoriesTab(provider.categories),
         ],
       ),
@@ -194,7 +187,7 @@ class _AdminScreensState extends State<AdminScreens> with SingleTickerProviderSt
     );
   }
 
-  Widget _buildStatsTab(var stats) {
+  Widget _buildStatsTab(AdminStats stats) {
     return ListView(
       padding: const EdgeInsets.all(16.0),
       children: [
@@ -303,8 +296,7 @@ class _AdminScreensState extends State<AdminScreens> with SingleTickerProviderSt
         final u = users[index];
         return ListTile(
           leading: CircleAvatar(
-            backgroundImage: u.photoUrl.isNotEmpty ? NetworkImage(u.photoUrl) : null,
-            child: u.photoUrl.isEmpty ? const Icon(Icons.person) : null,
+            child: Text(u.name.isNotEmpty ? u.name[0].toUpperCase() : 'U'),
           ),
           title: Text(u.name),
           subtitle: Text('${u.email}\nRol: ${u.role.toUpperCase()} • ${u.active ? "Activo" : "Inactivo"}'),
