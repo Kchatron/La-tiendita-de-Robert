@@ -170,7 +170,7 @@ class BookShopProvider extends ChangeNotifier {
   }
 
   Future<void> logout() async {
-    authRepository.logout();
+    await authRepository.logout();
     await refreshAll();
   }
 

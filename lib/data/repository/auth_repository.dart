@@ -88,7 +88,7 @@ class AuthRepository {
     return newUser;
   }
 
-  void logout() {
+  Future<void> logout() async {
     _currentUser = null;
   }
 

@@ -1,14 +1,21 @@
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'data/local/db_helper.dart';
-import 'data/repository/auth_repository.dart';
 import 'data/repository/bookshop_repository.dart';
+import 'data/repository/firebase_auth_repository.dart';
 import 'data/repository/pdf_manager.dart';
+import 'firebase_options.dart';
 import 'providers/bookshop_provider.dart';
 import 'ui/main_app_scaffold.dart';
 
-void main() {
+Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
+
   runApp(const MyApp());
 }
 
@@ -20,7 +27,7 @@ class MyApp extends StatelessWidget {
     // Initialise databases & repositories
     final dbHelper = DbHelper.instance;
     final pdfManager = PdfManager();
-    final authRepository = AuthRepository(dbHelper: dbHelper);
+    final authRepository = FirebaseAuthRepository(dbHelper: dbHelper);
     final bookShopRepository = BookShopRepository(
       dbHelper: dbHelper,
       pdfManager: pdfManager,
