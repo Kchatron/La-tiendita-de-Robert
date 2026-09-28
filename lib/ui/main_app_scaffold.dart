@@ -1,123 +1,95 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../providers/bookshop_provider.dart';
-import 'screens/auth/login_screen.dart';
 import 'screens/home/home_screen.dart';
 import 'screens/explore/explore_screen.dart';
 import 'screens/library/library_screen.dart';
 import 'screens/favorites/favorites_screen.dart';
 import 'screens/profile/profile_screen.dart';
-
-class MainApp extends StatelessWidget {
-  const MainApp({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return const AppScaffoldSwitcher();
-  }
-}
-
-class AppScaffoldSwitcher extends StatelessWidget {
-  const AppScaffoldSwitcher({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    final provider = Provider.of<BookShopProvider>(context);
-
-    if (provider.isLoading) {
-      return const Scaffold(
-        body: Center(
-          child: CircularProgressIndicator(),
-        ),
-      );
-    }
-
-    if (provider.currentUser == null) {
-      return const LoginScreen();
-    }
-
-    return const MainAppScaffold();
-  }
-}
+import 'screens/admin/admin_screens.dart';
 
 class MainAppScaffold extends StatefulWidget {
-  const MainAppScaffold({super.key});
+  final int initialIndex;
+
+  const MainAppScaffold({super.key, this.initialIndex = 0});
 
   @override
   State<MainAppScaffold> createState() => _MainAppScaffoldState();
 }
 
 class _MainAppScaffoldState extends State<MainAppScaffold> {
-  int _currentIndex = 0;
+  late int _currentIndex;
 
-  final List<Widget> _screens = const [
-    HomeScreen(),
-    ExploreScreen(),
-    LibraryScreen(),
-    FavoritesScreen(),
-    ProfileScreen(),
-  ];
+  @override
+  void initState() {
+    super.initState();
+    _currentIndex = widget.initialIndex;
+  }
+
+  void _onTabTapped(int index) {
+    setState(() {
+      _currentIndex = index;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
+    final provider = Provider.of<BookShopProvider>(context);
+    final user = provider.currentUser;
+
+    final List<Widget> pages = [
+      const HomeScreen(),
+      const ExploreScreen(),
+      const LibraryScreen(),
+      const FavoritesScreen(),
+      const ProfileScreen(),
+      if (user?.isAdmin == true) const AdminScreens(),
+    ];
 
     return Scaffold(
       body: IndexedStack(
         index: _currentIndex,
-        children: _screens,
+        children: pages,
       ),
-      bottomNavigationBar: Container(
-        decoration: BoxDecoration(
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withOpacity(0.1),
-              blurRadius: 10,
-              offset: const Offset(0, -3),
+      bottomNavigationBar: BottomNavigationBar(
+        currentIndex: _currentIndex > 4 ? 0 : _currentIndex,
+        onTap: _onTabTapped,
+        type: BottomNavigationBarType.fixed,
+        selectedItemColor: Colors.indigo,
+        unselectedItemColor: Colors.grey,
+        items: [
+          const BottomNavigationBarItem(
+            icon: Icon(Icons.home_outlined),
+            activeIcon: Icon(Icons.home),
+            label: 'Inicio',
+          ),
+          const BottomNavigationBarItem(
+            icon: Icon(Icons.explore_outlined),
+            activeIcon: Icon(Icons.explore),
+            label: 'Explorar',
+          ),
+          const BottomNavigationBarItem(
+            icon: Icon(Icons.collections_bookmark_outlined),
+            activeIcon: Icon(Icons.collections_bookmark),
+            label: 'Biblioteca',
+          ),
+          const BottomNavigationBarItem(
+            icon: Icon(Icons.favorite_outline),
+            activeIcon: Icon(Icons.favorite),
+            label: 'Favoritos',
+          ),
+          const BottomNavigationBarItem(
+            icon: Icon(Icons.person_outline),
+            activeIcon: Icon(Icons.person),
+            label: 'Perfil',
+          ),
+          if (user?.isAdmin == true)
+            const BottomNavigationBarItem(
+              icon: Icon(Icons.admin_panel_settings_outlined),
+              activeIcon: Icon(Icons.admin_panel_settings),
+              label: 'Admin',
             ),
-          ],
-        ),
-        child: ClipRRect(
-          borderRadius: const BorderRadius.only(
-            topLeft: Radius.circular(24.0),
-            topRight: Radius.circular(24.0),
-          ),
-          child: NavigationBar(
-            selectedIndex: _currentIndex,
-            onDestinationSelected: (index) {
-              setState(() {
-                _currentIndex = index;
-              });
-            },
-            destinations: const [
-              NavigationDestination(
-                icon: Icon(Icons.home_outlined),
-                selectedIcon: Icon(Icons.home),
-                label: 'Inicio',
-              ),
-              NavigationDestination(
-                icon: Icon(Icons.explore_outlined),
-                selectedIcon: Icon(Icons.explore),
-                label: 'Explorar',
-              ),
-              NavigationDestination(
-                icon: Icon(Icons.library_books_outlined),
-                selectedIcon: Icon(Icons.library_books),
-                label: 'Biblioteca',
-              ),
-              NavigationDestination(
-                icon: Icon(Icons.favorite_border),
-                selectedIcon: Icon(Icons.favorite),
-                label: 'Favoritos',
-              ),
-              NavigationDestination(
-                icon: Icon(Icons.person_outline),
-                selectedIcon: Icon(Icons.person),
-                label: 'Perfil',
-              ),
-            ],
-          ),
-        ),
+        ],
       ),
     );
   }
